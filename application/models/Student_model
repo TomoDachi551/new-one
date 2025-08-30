@@ -1,0 +1,24 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Student_model extends CI_Model {
+
+    public function __construct() {
+        parent::__construct();
+    }
+
+    // Fetch all students
+    public function fetch_all_students() {
+        return $this->db->get('students')->result();
+    }
+
+    // Fetch single student by ID
+    public function fetch_student_by_id($id) {
+        return $this->db->where('id', $id)->get('students')->row();
+    }
+
+    // Update student record
+    public function update_student($id, $data) {
+        return $this->db->where('id', $id)->update('students', $data);
+    }
+}

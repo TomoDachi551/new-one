@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student List</title>
+</head>
+<body>
+    <h1>All Students</h1>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th>Year Level</th>
+            <th>Contact</th>
+            <th>Action</th>
+        </tr>
+        <?php foreach ($students as $s): ?>
+        <tr>
+            <td><?= $s->id; ?></td>
+            <td><?= $s->fullname; ?></td>
+            <td><?= $s->email; ?></td>
+            <td><?= $s->course; ?></td>
+            <td><?= $s->year_level; ?></td>
+            <td><?= $s->contact_number; ?></td>
+            <td><a href="<?= site_url('students/edit/'.$s->id); ?>">Edit</a></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+</body>
+</html>
