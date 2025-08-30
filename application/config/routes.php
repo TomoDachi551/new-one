@@ -55,3 +55,4 @@ $route['translate_uri_dashes'] = FALSE;
 $route['students'] = 'students/index';
 $route['students/edit/(:num)'] = 'students/edit/$1';
 $route['students/update'] = 'students/update';
+$route['login'] = 'auth/login';   // Example, depends on your controller
