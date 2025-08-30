@@ -1,28 +1,27 @@
-# Dockerfile for CI3 (repo root contains index.php)
+# Use PHP with Apache
 FROM php:8.2-apache
 
-# Install mysqli/pdo
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libzip-dev zip unzip \
-    && docker-php-ext-install mysqli pdo pdo_mysql \
-    && rm -rf /var/lib/apt/lists/*
+# Install PHP extensions required for CI3
+RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Enable rewrite + allow .htaccess
-RUN a2enmod rewrite \
- && sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+# Enable Apache rewrite module (needed for CI3's clean URLs)
+RUN a2enmod rewrite
 
-# Change Apache to listen on port 10000 (Render expects container to expose that port)
-RUN sed -i 's/Listen 80/Listen 10000/g' /etc/apache2/ports.conf \
- && sed -i 's/<VirtualHost *:80>/<VirtualHost *:10000>/g' /etc/apache2/sites-available/000-default.conf
+# Set Apache document root (CI3 index.php is in root folder)
+ENV APACHE_DOCUMENT_ROOT /var/www/html
 
-# Copy app files into Apache web root
+# Update Apache config to use the new document root
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
+    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Copy your CodeIgniter app into container
 COPY . /var/www/html/
 
+# Set working directory
 WORKDIR /var/www/html/
 
-# Fix permissions
-RUN chown -R www-data:www-data /var/www/html
+# Expose port 80 (Render maps $PORT to this automatically)
+EXPOSE 80
 
-EXPOSE 10000
-
+# Start Apache
 CMD ["apache2-foreground"]
